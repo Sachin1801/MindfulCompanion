@@ -1,0 +1,52 @@
+.landing-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: linear-gradient(to right bottom, #ff0000, #ff0045, #ff0078, #ea00aa, #b81cd7, #8a3ad6, #5746cf, #004ac2, #003d94, #002e66, #001d3a, #020812);
+    background-size: 200% 200%;
+    background-position: 0% 0%;
+    cursor: pointer;
+    transition: all 0.6s ease-out;
+  }
+  
+  .landing-container:hover {
+    background-position: 100% 100%;
+  }
+  
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .hello {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.2;
+    transition: 0.5s ease-in-out;
+  }
+  
+  .hidden {
+    display: block;
+    font-size: 2rem;
+    opacity: 0;
+    transition: all 0.3s ease-in;
+    margin-top: 1rem;
+  }
+  
+  .landing-container:hover .hidden {
+    opacity: 1;
+  }
+  
+  .landing-container:hover .hello {
+    transform: translateY(-20px);
+  }
