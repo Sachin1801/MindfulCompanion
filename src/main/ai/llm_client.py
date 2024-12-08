@@ -1,7 +1,7 @@
 import aiohttp
-import logging
-from typing import Optional, Dict
 import json
+import logging
+from typing import Dict, Optional
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -14,28 +14,38 @@ class LLMClient:
     ):
         self.base_url = base_url
         self.headers = {"Content-Type": "application/json"}
+        self.system_prompt = self._load_system_prompt(system_prompt_path)
         
+    def _load_system_prompt(self, path: Optional[Path]) -> str:
+        if not path:
+            return ""
+        try:
+            return Path(path).read_text()
+        except Exception as e:
+            logger.error(f"Failed to load system prompt: {e}")
+            return ""
+
     async def generate_response(
         self,
         user_message: str,
-        temperature: float = 0.5,
-        max_tokens: int = 300
+        temperature: float = 0.6,
+        max_tokens: int = 1000
     ) -> Dict:
+        """Generate a response using LM Studio's local API."""
         try:
             async with aiohttp.ClientSession() as session:
                 payload = {
                     "messages": [
-                        {"role": "system", "content": "You are a supportive mental wellness companion. Keep responses concise and in JSON format."},
+                        {"role": "system", "content": self.system_prompt},
                         {"role": "user", "content": user_message}
                     ],
                     "temperature": temperature,
                     "max_tokens": max_tokens,
-                    "stream": False,
-                    "stop": ["}"]
+                    "stream": False
                 }
                 
                 async with session.post(
-                    f"{self.base_url}/v1/chat/completion",
+                    f"{self.base_url}/v1/chat/completions",
                     headers=self.headers,
                     json=payload
                 ) as response:
@@ -44,27 +54,34 @@ class LLMClient:
                         raise Exception(f"API Error: {error_text}")
                     
                     result = await response.json()
-                    content = result['choices'][0]['message']['content']
+                    # Return the raw response instead of parsing the content
+                    return result
                     
-                    # Clean up response
-                    content = content.strip()
-                    if not content.endswith('}'):
-                        content += '}'
-                    
-                    try:
-                        return json.loads(content)
-                    except json.JSONDecodeError:
-                        # Extract JSON from response if possible
-                        import re
-                        json_match = re.search(r'(\{.*\})', content.replace('\n', ' '), re.DOTALL)
-                        if json_match:
-                            return json.loads(json_match.group(1))
-                        raise
-                        
         except Exception as e:
             logger.error(f"Error generating response: {e}")
             return {
-                "reflection": "I hear you",
-                "support": "I'm here to listen",
-                "action": "Would you like to tell me more?"
+                "choices": [{
+                    "message": {
+                        "content": json.dumps({
+                            "reflection": "I understand you're reaching out",
+                            "validation": "Your feelings are important",
+                            "support": "I'm here to listen",
+                            "question": "Would you like to tell me more?",
+                            "safety_note": ""
+                        })
+                    }
+                }]
             }
+
+    async def test_connection(self) -> bool:
+        """Test if LM Studio API is accessible."""
+        try:
+            response = await self.generate_response(
+                "Test connection message",
+                temperature=0.1,
+                max_tokens=10
+            )
+            return isinstance(response, dict) and len(response) > 0
+        except Exception as e:
+            logger.error(f"Connection test failed: {e}")
+            return False

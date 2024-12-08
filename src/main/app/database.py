@@ -1,5 +1,5 @@
 import sqlite3
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from contextlib import contextmanager
 import json
 from .models import UserProfile, ChatMessage
@@ -99,13 +99,13 @@ class Database:
                     mood=row['mood']
                 ) for row in rows
             ]
-        # Add to Database class
-        def get_mood_statistics(self, user_id: int) -> Dict[str, Any]:
-            with self.get_connection() as conn:
-                cursor = conn.execute('''
-                    SELECT mood, COUNT(*) as count
-                    FROM chat_history
-                    WHERE user_id = ? AND mood IS NOT NULL
-                    GROUP BY mood
-                ''', (user_id,))
-                return dict(cursor.fetchall())
+
+    def get_mood_statistics(self, user_id: int) -> Dict[str, Any]:
+        with self.get_connection() as conn:
+            cursor = conn.execute('''
+                SELECT mood, COUNT(*) as count
+                FROM chat_history
+                WHERE user_id = ? AND mood IS NOT NULL
+                GROUP BY mood
+            ''', (user_id,))
+            return dict(cursor.fetchall())

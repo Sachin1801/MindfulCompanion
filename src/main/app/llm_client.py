@@ -13,26 +13,35 @@ class LLMClient:
         try:
             payload = {
                 "messages": messages,
-                "temperature": 0.7,
+                "temperature": 0.5,
                 "max_tokens": 500,
             }
             
             response = requests.post(
                 f"{self.base_url}/v1/chat/completions",
                 headers=self.headers,
-                json=payload
+                json=payload,
+                timeout=30
             )
             
-            if response.status_code != 200:
-                logger.error(f"API Error: {response.text}")
-                return {"error": "Failed to generate response"}
-
+            response.raise_for_status()
+            
             result = response.json()
+            if not result.get("choices"):
+                raise ValueError("No choices in response")
+            
             return {
                 "message": result["choices"][0]["message"]["content"],
-                "usage": result.get("usage", {})
+                "usage": result.get("usage", {}),
+                "status": "success"
             }
 
+        except requests.Timeout:
+            logger.error("Request timed out")
+            return {"error": "Request timed out", "status": "timeout"}
+        except requests.RequestException as e:
+            logger.error(f"Request failed: {e}")
+            return {"error": str(e), "status": "request_failed"}
         except Exception as e:
             logger.error(f"Error generating response: {e}")
-            return {"error": str(e)}
+            return {"error": str(e), "status": "error"}

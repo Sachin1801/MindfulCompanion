@@ -111,8 +111,12 @@ async def get_mood_analysis(user_id: int = Depends(get_current_user_id)):
 
 @app.post("/reset")
 async def reset_profile(user_id: int = Depends(get_current_user_id)):
-    # Implement profile reset logic here
-    pass
+    try:
+        # Implement profile reset logic
+        pass
+    except Exception as e:
+        logger.error(f"Error resetting profile: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest, user_id: int = Depends(get_current_user_id)):

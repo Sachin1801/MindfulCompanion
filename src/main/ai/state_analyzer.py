@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 import re
 from dataclasses import dataclass
 from datetime import datetime
@@ -13,25 +13,49 @@ class EmotionalState:
 class StateAnalyzer:
     def __init__(self):
         self.emotion_patterns = {
-            'depression': [
-                r'worthless', r'nothing but', r'never get around',
-                r'barely sleep', r'don\'t deserve', r'given up'
+            'neutral': [
+                r'hello', r'hi', r'hey', r'how are you',
+                r'good morning', r'good afternoon', r'good evening'
             ],
             'anxiety': [
-                r'can\'t stop', r'constantly', r'overwhelming',
-                r'never ends', r'worried sick', r'panic'
+                r'anxious', r'worried', r'panic', r'stress',
+                r'overwhelm', r'nervous', r'fear', r'tension'
+            ],
+            'depression': [
+                r'depress', r'sad', r'hopeless', r'worthless',
+                r'tired', r'exhausted', r'empty', r'lonely'
+            ],
+            'anger': [
+                r'angry', r'furious', r'rage', r'frustrated',
+                r'irritated', r'mad', r'resent'
+            ],
+            'grief': [
+                r'loss', r'grief', r'miss', r'gone',
+                r'death', r'passed away', r'mourning'
+            ],
+            'relationship': [
+                r'relationship', r'partner', r'marriage',
+                r'divorce', r'family', r'friend', r'conflict'
+            ],
+            'trauma': [
+                r'trauma', r'abuse', r'ptsd', r'flashback',
+                r'nightmare', r'trigger', r'assault'
+            ],
+            'self_esteem': [
+                r'confidence', r'self-worth', r'ugly',
+                r'failure', r'not good enough', r'shame'
             ],
             'crisis': [
                 r'suicide', r'kill myself', r'better off dead',
-                r'end it all', r'no point living'
+                r'end it all', r'no point living', r'harm myself'
             ]
         }
         
         self.intensity_modifiers = [
-            (r'very|really|extremely|completely', 0.3),
-            (r'always|never|constantly', 0.2),
-            (r'sometimes|occasionally', -0.1),
-            (r'maybe|perhaps', -0.2)
+            (r'very|really|extremely|completely|always', 0.3),
+            (r'quite|rather|fairly|often', 0.2),
+            (r'sometimes|occasionally|a bit|slightly', -0.1),
+            (r'maybe|perhaps|not sure', -0.2)
         ]
         
     def analyze_message(self, message: str) -> EmotionalState:
@@ -54,9 +78,15 @@ class StateAnalyzer:
             score = sum(len(re.findall(pattern, message)) for pattern in patterns)
             emotion_scores[emotion] = score
             
-        return max(emotion_scores.items(), key=lambda x: x[1])[0]
+        # Default to neutral if no strong emotions detected
+        max_emotion = max(emotion_scores.items(), key=lambda x: x[1])
+        return max_emotion[0] if max_emotion[1] > 0 else 'neutral'
     
     def _calculate_intensity(self, message: str) -> float:
+        # For neutral messages, return low intensity
+        if self._detect_primary_emotion(message) == 'neutral':
+            return 0.1
+            
         base_intensity = 0.5
         
         for pattern, modifier in self.intensity_modifiers:
@@ -91,11 +121,14 @@ class StateAnalyzer:
         return risk_level
 
     def get_response_type(self, state: EmotionalState) -> str:
+        """Determine appropriate response type based on emotional state"""
         if state.risk_level > 0.7:
-            return 'crisis'
-        elif state.risk_level > 0.5:
-            return 'urgent'
-        elif state.intensity > 0.7:
+            return 'crisis_intervention'
+        elif state.intensity > 0.8:
             return 'grounding'
+        elif state.intensity > 0.6:
+            return 'emotional_support'
+        elif state.primary_emotion == 'neutral':
+            return 'rapport_building'
         else:
-            return 'supportive'
+            return 'therapeutic_exploration'
