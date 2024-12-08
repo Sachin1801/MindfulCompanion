@@ -1,44 +1,48 @@
 from typing import Dict, Optional
+from .state_analyzer import StateAnalyzer, EmotionalState
 
 class TherapeuticPromptManager:
     def __init__(self):
-        self.system_prompt = """You are a supportive mental wellness companion. Respond with empathy and structure.
-Always provide responses in the following JSON format:
+        self.state_analyzer = StateAnalyzer()
+        self.system_prompt = """You are a supportive mental wellness companion. Keep responses concise and empathetic.
+Your response must be in valid JSON format with these keys only:
 {
-    "reflection": "Mirror the user's emotions",
-    "validation": "Validate their experience",
-    "support": "Offer gentle support or coping strategy",
-    "question": "Optional follow-up question for exploration",
-    "safety_note": "Include if crisis indicators detected"
+    "reflection": "brief emotional reflection",
+    "support": "brief supportive statement",
+    "action": "suggested coping strategy if needed"
 }"""
 
     def create_therapeutic_prompt(self, user_message: str) -> str:
-        return f"""Analyze the following message with empathy and respond with a JSON object containing these exact keys:
+        emotional_state = self.state_analyzer.analyze_message(user_message)
+        
+        return f"""Respond to: "{user_message}"
 
-User message: {user_message}
-
-Required JSON format:
+Return only a JSON object with these exact keys:
 {{
-    "reflection": "Mirror the user's emotions",
-    "validation": "Validate their experience",
-    "support": "Offer gentle support",
-    "question": "Follow-up question",
-    "safety_concern_flag": false
+    "reflection": "brief emotional reflection",
+    "support": "brief supportive statement",
+    "action": "suggested coping strategy if needed"
 }}
 
-Return ONLY the JSON object, no additional text."""
+Keep each response element under 50 words. Focus on {emotional_state.primary_emotion}."""
 
-    def create_crisis_response(self) -> Dict:
+    def create_crisis_response(self, emotional_state: Optional[EmotionalState] = None) -> Dict:
         return {
-            "reflection": "I hear that you're in significant pain right now",
-            "validation": "What you're going through is serious and you deserve support",
-            "support": "While I'm here to listen, it's important to get professional help",
-            "safety_note": "Please reach out to crisis support: Emergency Services (911) or Crisis Text Line (988)"
+            "reflection": "I hear you're in pain",
+            "support": "Your life has value. Professional help is available.",
+            "action": "Please call 988 for immediate support, or 911 if in immediate danger."
         }
 
-    def check_crisis_indicators(self, message: str) -> bool:
-        crisis_keywords = [
-            "suicide", "kill myself", "end it all", "want to die",
-            "hurt myself", "self-harm", "no reason to live"
-        ]
-        return any(keyword in message.lower() for keyword in crisis_keywords)
+    def create_grounding_response(self) -> Dict:
+        return {
+            "reflection": "I notice strong emotions",
+            "support": "Let's take a moment to ground ourselves",
+            "action": "Try this: Name 5 things you can see right now."
+        }
+
+    def create_fallback_response(self) -> Dict:
+        return {
+            "reflection": "I hear you",
+            "support": "I'm here to listen",
+            "action": "Would you like to tell me more?"
+        }

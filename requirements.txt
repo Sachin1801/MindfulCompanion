@@ -1,16 +1,6 @@
-# Core dependencies
-python-dotenv>=0.19.0
-aiohttp>=3.8.0
-pydantic>=2.0.0
-
-# UI
-customtkinter>=5.2.0
-pillow>=10.0.0
-
-# Development
-pytest>=7.0.0
-black>=23.0.0
-flake8>=6.0.0
-
-# Data management
-# sqlite3
+fastapi
+uvicorn
+python-dotenv
+requests
+pydantic
+python-multipart
