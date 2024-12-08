@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindfulCompanion</title>
+    <link rel="stylesheet" href="src/styles/styles.css">
+</head>
+<body>
+    <div id="onboarding-form" class="container">
+        <form id="user-profile-form">
+            <h2>Welcome to MindfulCompanion</h2>
+            <div class="form-group">
+                <input type="text" id="name" required placeholder="Your name">
+            </div>
+
+            <div class="form-group">
+                <label>Age Category:</label>
+                <select id="age" required>
+                    <option value="">Select age range</option>
+                    <option value="0-12">0-12 years</option>
+                    <option value="12-20">12-20 years</option>
+                    <option value="20-40">20-40 years</option>
+                    <option value="40-60">40-60 years</option>
+                    <option value="60+">60+ years</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Which emotions do you struggle with the most? (Select up to 3)</label>
+                <select id="emotions" multiple required>
+                    <option value="worry">Worry</option>
+                    <option value="sadness">Sadness</option>
+                    <option value="loneliness">Loneliness</option>
+                    <option value="nervousness">Nervousness</option>
+                    <option value="anger">Anger</option>
+                    <option value="none">None of these</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Current therapy status:</label>
+                <select id="therapy-status" required>
+                    <option value="">Select status</option>
+                    <option value="current">Currently in therapy</option>
+                    <option value="past">Previously attended therapy</option>
+                    <option value="never">Never attended therapy</option>
+                    <option value="considering">Considering therapy</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Preferred interaction style:</label>
+                <select id="interaction-style" required>
+                    <option value="">Select style</option>
+                    <option value="direct">Direct and straightforward</option>
+                    <option value="gentle">Gentle and supportive</option>
+                    <option value="analytical">Analytical and logical</option>
+                    <option value="motivational">Motivational and encouraging</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Current stress level:</label>
+                <select id="stress-level" required>
+                    <option value="">Select level</option>
+                    <option value="low">Minimal stress</option>
+                    <option value="moderate">Moderate stress</option>
+                    <option value="high">High stress</option>
+                    <option value="severe">Severe stress</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <textarea id="goals" required placeholder="What are your goals for using this companion?"></textarea>
+            </div>
+            <button type="submit">Start Journey</button>
+        </form>
+    </div>
+
+    <div id="chat-interface" class="container hidden">
+        <div id="conversation-history"></div>
+        <div class="input-area">
+            <textarea id="user-message" placeholder="Enter your message..."></textarea>
+            <div class="input-controls">
+                <select class="mood-selector">
+                    <option value="" disabled selected>Current Mood</option>
+                    <option value="stressed">Stressed</option>
+                    <option value="happy">Happy</option>
+                    <option value="motivated">Motivated</option>
+                    <option value="sad">Sad</option>
+                    <option value="depressed">Depressed</option>
+                </select>
+                <button id="send-button" aria-label="Send message">→</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="src/js/app.js"></script>
+</body>
+</html>
