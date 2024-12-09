@@ -13,10 +13,8 @@ On Device AI hack Project (LMStudio x Microsoft x Qualcomm) @ NYU
    - [Minimum Lovable Product (MLP)](#minimum-lovable-product-mlp)
    - [Future Enhancements](#future-enhancements)
 3. [Use Cases](#use-cases)
-4. [Commercial Viability](#commercial-viability)
-5. [Technical Differentiation](#technical-differentiation)
-6. [Feedback](#feedback)
-7. [Team](#team)
+4. [Technical Differentiation](#technical-differentiation)
+5. [Team](#team)
 
 ---
 
@@ -79,8 +77,8 @@ Mindful leverages on-device AI with the following key principles:
 ---
 
 ## Team
-- **[Sachin Adlakha](github.com/sachin1801)**
-- **[Adamay Mann](github.com/mannadamay12)**
+- **[Sachin Adlakha](https://github.com/sachin1801)**
+- **[Adamay Mann](https://github.com/mannadamay12)**
 
 ---
 
